@@ -1,108 +1,62 @@
-import React, { useState } from 'react'
+import React, { Component } from 'react';
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { newPost } from "../redux/actions/postActions"
 
-function PostForm() {
-    const [initialForm, setFormValues] = useState({
-        title:"",
-        body:"",
-    })
-
-    const handleChange = (event=>{
-        const { name, value } = event.target
-
-        setFormValues({...initialForm, [name]:value})
-    })
-
-    const handleSubmit = (event)=>{
-        event.preventDefault()
-        
-        const newPost = {
-            title:initialForm.title,
-            body:initialForm.body,
-            id:101
+export class PostForm extends Component {
+    constructor(props) {
+        super(props)
+    
+        this.state = {
+            title:"",
+            body:""
+        }
+    }
+    
+    render() {
+        const handleChange = (event) => {
+            this.setState({
+                [event.target.name]:event.target.value
+            })
         }
 
-        console.log(newPost)
-    }
+        const { title, body } = this.state
 
-    return (
-        <div>
-            <h3>Add Post</h3>
+        const handleSubmit = (event) => {
+            event.preventDefault();
 
+            const newPost = {
+                title, 
+                body,
+                userId:3
+            }
+
+            // call the new post action
+
+            this.props.newPost(newPost)
+        }
+
+        return (
             <form onSubmit={handleSubmit}>
+                <h4>New Post</h4>
                 <div>
-                    <label htmlFor="title">Title</label><br/>
-                    <input type="text" name="title" onChange={handleChange} value={initialForm.title} />
-                </div><br/>
-                <div>
-                    <label htmlFor="body">Body</label><br/>
-                    <textarea name="body" onChange={handleChange} value={initialForm.body}></textarea>
+                    <label>Title</label><br/>
+                    <input name="title" type="text" onChange={handleChange} value={title}/>
                 </div><br/>
 
-                <button type="submit">Add Post</button>
+                <div>
+                    <label>Body</label><br/>
+                    <textarea name="body" onChange={handleChange} value={body}></textarea>
+                </div><br/>
+
+                <button type="submit">New Post</button>
             </form>
-        </div>
-    )
+        )
+    }
 }
 
-export default PostForm
+PostForm.propTypes = {
+    newPost:PropTypes.func.isRequired
+}
 
-
-// class PostForm extends Component {
-//     constructor(props) {
-//         super(props)
-    
-//         this.state = {
-//              title:"",
-//              body:"",
-//         }
-//     }
-    
-//     render() {
-//         const { title, body } = this.state
-
-
-//         const onChange = (event)=>{
-//             this.setState({[event.target.name] : event.target.value})
-//         }
-
-//         // submit the form
-
-//         const onSubmit = async (event)=>{
-//             event.preventDefault();
-
-//             const newPost = {
-//                 title,
-//                 body,
-//                 "id":101
-//             }
-
-//             // make a post request to posts endpoint
-//             // JSON placeholder API not working so i faked my own response
-//             const response = newPost
-
-//             console.log(response)
-//         }
-
-
-//         return (
-//             <div>
-//                <h3>Add Post</h3>
-
-//                <form onSubmit={onSubmit}>
-//                    <div>
-//                        <label htmlFor="title">Title</label><br/>
-//                        <input type="text" name="title" onChange={onChange} value={title} />
-//                     </div><br/>
-//                     <div>
-//                        <label htmlFor="body">Body</label><br/>
-//                        <textarea name="body" onChange={onChange} value={body}></textarea>
-//                    </div><br/>
-
-//                    <button type="submit">Add Post</button>
-//                </form>
-//             </div>
-//         )
-//     }
-// }
-
-// export default PostForm
+export default connect(null, { newPost })(PostForm)
